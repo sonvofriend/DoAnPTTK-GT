@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1537375661 source:/home/fsociety/Documents/School/Do-an-PTTKGT/Luuong-cuc-dai/main.cpp
+	<iostream>
+	<cmath>
+	<iomanip>
+	<fstream>
+
