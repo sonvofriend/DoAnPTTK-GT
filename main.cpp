@@ -15,7 +15,7 @@ struct Node
 {
     int pre; //dinh ke truoc
     int attr; // 0 - chua gan nha, 1 - da gan nhan, 2 - da danh dau
-    int x;
+    int x; //kha nang thong qua cua dinh dang xet
 };
 
 int n; // so dinh
@@ -104,61 +104,62 @@ void ReSetLabel()
 
 void FordFulkerson()
 {
-    ReSetLabel();
-
-    while(node[n-1].attr == 0)
+    while(true)//thuc hien cho den khi ko the danh dau duoc nua - ko con dinh nao de danh dau, ket thuc chuong trinh
     {
-        //danh dau dinh v - da gan nhan co chi so nho nhat
-        int k;  // index cua dinh can danh dau v trong node[]
+        ReSetLabel();
 
-        for(k = 0; k < n; k++)
+        while(node[n-1].attr == 0)
         {
-            if(node[k].attr == 1) break; //dinh co nhan co chi so nho nhat
-        }
+            //danh dau dinh v - da gan nhan co chi so nho nhat
+            int k;  // index cua dinh can danh dau v trong node[]
 
-        if(k == n) return; //ko con dinh nao de danh dau, ket thuc chuong trinh
-
-        //danh dau dinh v
-        SetNode(node[k], node[k].pre, 2, node[k].x);
-        //cout <<  "Danh dau dinh " << k << endl;
-
-
-        //gan nhan cho cac dinh ke v chua co nhan
-        for(int i = 0; i < n; i++)
-        {
-            if(node[i].attr == 0) // chi xet cac node chua gan nhan
+            for(k = 0; k < n; k++)
             {
-                if(c[k][i] > 0 && f[k][i] < c[k][i]) // cung (v, W);
+                if(node[k].attr == 1) break; //dinh co nhan co chi so nho nhat
+            }
+
+            if(k == n) return; //ko con dinh nao de danh dau, ket thuc chuong trinh
+
+            //danh dau dinh v
+            SetNode(node[k], node[k].pre, 2, node[k].x);
+            //cout <<  "Danh dau dinh " << k << endl;
+
+
+            //gan nhan cho cac dinh ke v chua co nhan
+            for(int i = 0; i < n; i++)
+            {
+                if(node[i].attr == 0) // chi xet cac node chua gan nhan
                 {
-                    SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
-                }
-                else if(c[i][k] > 0 && f[k][i] > 0) //cung (W.v)
-                {
-                    SetNode(node[i], k, 1, (node[k].x <f[k][i]) ? node[k].x : f[k][i]);
+                    if(c[k][i] > 0 && f[k][i] < c[k][i]) // cung (v, W);
+                    {
+                        SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
+                    }
+                    else if(c[i][k] > 0 && f[k][i] > 0) //cung (W.v)
+                    {
+                        SetNode(node[i], k, 1, (node[k].x <f[k][i]) ? node[k].x : f[k][i]);
+                    }
                 }
             }
         }
-    }
 
-    //Hieu chinh luong
-    int delta = node[n-1].x;
-    max_f += delta; //tang luong cuc dai
-    int s = n - 1;
-    while(s != 0) //truy nguoc dinh
-    {
-        //node[s].pre la node ke truoc cua node s trong duong di toi dinh thu
-        if(s > node[s].pre) // tuong duong f > 0 (fij >0 khi i < j)
+        //Hieu chinh luong
+        int delta = node[n-1].x;
+        max_f += delta; //tang luong cuc dai
+        int s = n - 1;
+        while(s != 0) //truy nguoc dinh
         {
-            f[node[s].pre][s] =  f[node[s].pre][s] + delta; //luong thuan thi cong
+            //node[s].pre la node ke truoc cua node s trong duong di toi dinh thu
+            if(s > node[s].pre) // tuong duong f > 0 (fij >0 khi i < j)
+            {
+                f[node[s].pre][s] =  f[node[s].pre][s] + delta; //luong thuan thi cong
+            }
+            else // f < 0
+            {
+                f[node[s].pre][s] =  f[node[s].pre][s] - delta; //luong nguoc thi tru
+            }
+            s = node[s].pre; //truy nguoc dinh
         }
-        else // f < 0
-        {
-            f[node[s].pre][s] =  f[node[s].pre][s] - delta; //luong nguoc thi tru
-        }
-        s = node[s].pre; //truy nguoc dinh
     }
-
-    FordFulkerson(); //tiep tuc thuc hien cho den khi ko the danh dau duoc nua
 }
 
 void Output()
