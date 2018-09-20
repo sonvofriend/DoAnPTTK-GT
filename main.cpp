@@ -132,7 +132,7 @@ void FordFulkerson()
                 {
                     SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
                 }
-                else if(c[k][i] < 0 && f[k][i] > 0)
+                else if(c[i][k] > 0 && f[k][i] > 0) //cung (W.v)
                 {
                     SetNode(node[i], k, 1, (node[k].x <f[k][i]) ? node[k].x : f[k][i]);
                 }
