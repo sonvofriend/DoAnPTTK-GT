@@ -19,6 +19,7 @@ struct Node
 };
 
 int n; // so dinh
+int beginNode, endNode;
 int c[MAX][MAX]; //kha nang thong qua cua dinh tuong ung voi nhau
 int f[MAX][MAX]; //luong hien tai cua cac cung tuong ung
 Node node[MAX]; //cac dinh
@@ -31,6 +32,7 @@ void Output(); //xuat ket qua
 
 void ReSetLabel(); //xoa cac nhan, dat lai nhan cho dinh phat
 void SetNode(Node &node, int pre, int attr, int x); //set cac thuoc tinh cho node
+char p[] = "sabcdt";
 
 
 int main()
@@ -67,8 +69,12 @@ void Input()
             inputFile >> c[i][j];
         }
     }
+
+    inputFile >> beginNode >> endNode;
+
     inputFile.close();
 }
+
 
 void Init()
 {
@@ -92,14 +98,13 @@ void SetNode(Node &node, int pre, int attr, int x)
 
 void ReSetLabel()
 {
-     //gan nhan cho dinh phat
-    SetNode(node[0], 0, 1, INFINITY);
-
-    //cac dinh con lai chua co nhan
-    for(int i = 1; i < n; i++)
+    //cac dinh ban dau chua co nhan
+    for(int i = 0; i < n; i++)
     {
         SetNode(node[i], -1, 0, 0);
     }
+     //gan nhan cho dinh phat
+    SetNode(node[beginNode], 0, 1, INFINITY);
 }
 
 void FordFulkerson()
@@ -108,7 +113,7 @@ void FordFulkerson()
     {
         ReSetLabel();
 
-        while(node[n-1].attr == 0)
+        while(node[endNode].attr == 0)
         {
             //danh dau dinh v - da gan nhan co chi so nho nhat
             int k;  // index cua dinh can danh dau v trong node[]
@@ -122,8 +127,6 @@ void FordFulkerson()
 
             //danh dau dinh v
             SetNode(node[k], node[k].pre, 2, node[k].x);
-            //cout <<  "Danh dau dinh " << k << endl;
-
 
             //gan nhan cho cac dinh ke v chua co nhan
             for(int i = 0; i < n; i++)
@@ -133,27 +136,29 @@ void FordFulkerson()
                     if(c[k][i] > 0 && f[k][i] < c[k][i]) // cung (v, W);
                     {
                         SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
+                        if(i == endNode) break; //break neu endNode da co nhan
                     }
                     else if(c[i][k] > 0 && f[k][i] > 0) //cung (W.v)
                     {
                         SetNode(node[i], k, 1, (node[k].x <f[k][i]) ? node[k].x : f[k][i]);
+                        if(i == endNode) break; //break neu endNode da co nhan
                     }
                 }
             }
         }
 
         //Hieu chinh luong
-        int delta = node[n-1].x;
+        int delta = node[endNode].x;
         max_f += delta; //tang luong cuc dai
-        int s = n - 1;
-        while(s != 0) //truy nguoc dinh
+        int s = endNode;
+        while(s != beginNode) //truy nguoc dinh
         {
-            //node[s].pre la node ke truoc cua node s trong duong di toi dinh thu
-            if(s > node[s].pre) // tuong duong f > 0 (fij >0 khi i < j)
+            //fij < cij thi cung chieu di
+            if(f[node[s].pre][s] < c[node[s].pre][s]) // tuong duong f > 0 (fij >0 khi i < j)
             {
                 f[node[s].pre][s] =  f[node[s].pre][s] + delta; //luong thuan thi cong
             }
-            else // f < 0
+            else if(f[node[s].pre][s] < 0)//  //fij < 0 thi nguoc chieu di
             {
                 f[node[s].pre][s] =  f[node[s].pre][s] - delta; //luong nguoc thi tru
             }
@@ -173,7 +178,7 @@ void Output()
     {
         for(int j = 0; j < n; j++)
         {
-            outFile << setw(5) << fabs(f[i][j]); //thu tu duong di chon bat ki, fij la tinh theo thu tu duong di, co the am
+            outFile << setw(5) << f[i][j];
         }
         outFile << endl;
     }
