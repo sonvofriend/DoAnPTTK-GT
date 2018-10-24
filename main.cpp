@@ -115,12 +115,12 @@ void FordFulkerson()
 
         while(node[endNode].attr == 0)
         {
-            //danh dau dinh v - da gan nhan co chi so nho nhat
+            //tim dinh v da gan nhan de danh dau
             int k;  // index cua dinh can danh dau v trong node[]
 
             for(k = 0; k < n; k++)
             {
-                if(node[k].attr == 1) break; //dinh co nhan co chi so nho nhat
+                if(node[k].attr == 1) break;
             }
 
             if(k == n) return; //ko con dinh nao de danh dau, ket thuc chuong trinh
@@ -133,15 +133,22 @@ void FordFulkerson()
             {
                 if(node[i].attr == 0) // chi xet cac node chua gan nhan
                 {
-                    if(c[k][i] > 0 && f[k][i] < c[k][i]) // cung (v, W);
+                    if(c[k][i] > 0) // cung (v, W);
                     {
-                        SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
-                        if(i == endNode) break; //break neu endNode da co nhan
+                        if(f[k][i] < c[k][i]) //neu bang thi ko gan nhan
+                        {
+                             SetNode(node[i], k, 1, (node[k].x < c[k][i] - f[k][i]) ? node[k].x : (c[k][i] - f[k][i]));
+                            if(i == endNode) break; //break neu endNode da co nhan
+                        }
                     }
-                    else if(c[i][k] > 0 && f[k][i] > 0) //cung (W.v)
+
+                    if(c[i][k] > 0) //cung (W.v)
                     {
-                        SetNode(node[i], k, 1, (node[k].x <f[k][i]) ? node[k].x : f[k][i]);
-                        if(i == endNode) break; //break neu endNode da co nhan
+                        if(f[i][k] > 0)
+                        {
+                             SetNode(node[i], k, 1, (node[k].x <f[i][k]) ? node[k].x : f[i][k]);
+                             if(i == endNode) break; //break neu endNode da co nhan
+                        }
                     }
                 }
             }
@@ -154,11 +161,11 @@ void FordFulkerson()
         while(s != beginNode) //truy nguoc dinh
         {
             //fij < cij thi cung chieu di
-            if(f[node[s].pre][s] < c[node[s].pre][s]) // tuong duong f > 0 (fij >0 khi i < j)
+            if(c[node[s].pre][s] > 0) // cung thuoc P+
             {
                 f[node[s].pre][s] =  f[node[s].pre][s] + delta; //luong thuan thi cong
             }
-            else if(f[node[s].pre][s] < 0)//  //fij < 0 thi nguoc chieu di
+            else if(c[s][node[s].pre] > 0)//  //
             {
                 f[node[s].pre][s] =  f[node[s].pre][s] - delta; //luong nguoc thi tru
             }
